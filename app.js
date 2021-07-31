@@ -2,15 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
-
-
-
+const cors = require('cors')
 
 
 
 
 app.use(bodyParser.json())
-
+app.use(bodyParser.urlencoded({ extended : true}))
+app.use(cors());
 
 
 
@@ -43,8 +42,72 @@ const Article = new mongoose.model("Article",newSchema)
 
 
 
+const userSignup = async (req,res) => {
+    try {
+     
+    
+        const user= req.body;
+        const newUser= new User(user);
+        await newUser.save();
+    
+        res.status(200).json('succesfully registered')
+    } catch (error) {
+        console.log('Error :' ,error.message)
+    }
+    }
+
+
+
+
+
+
+
+const userSchema= new mongoose.Schema({
+    firstName: {
+        type: String,
+        required: true,
+        min:2,
+        max:20
+    },
+    lastName: {
+        type: String,
+        required: true,
+        min:2,
+        max:20
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        
+    },
+    password: {
+        type: String,
+        required: true  
+    }
+
+})
+
+const User = new mongoose.model('User',userSchema)
+
+
+
+
+
+
+
+
+
+
+
+app.post('/Signup', userSignup) ;
+
+
+
+
+
 app.post('/article',(req,res) =>{
-    const newData = new Article({
+    const newData = new Article({ 
         title : req.body.title,
         description : req.body.description
     });
@@ -118,4 +181,4 @@ mongoose.connect('mongodb://127.0.0.1:27017/summer', {useNewUrlParser : true , u
 
 
 
-app.listen(3000)
+app.listen(8000)
